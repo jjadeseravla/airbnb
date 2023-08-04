@@ -13,12 +13,12 @@ export default function RegisterPage() {
     e.preventDefault();
     // send req to api
     try {
-      axios.post('/register', {
+      await axios.post('/register', {
         name,
         email,
         password,
       });
-      alert('Successfull, now you can login')
+      alert('Successful, now you can login')
     } catch (e) {
       alert("registration failed");
     }
