@@ -22,7 +22,7 @@ export default function RegisterPage() {
     } catch (e) {
       alert("registration failed");
     }
-    axios.get('test');
+    // axios.get('test');
 
     // const response = await fetch('/register', {
     //   method: 'POST',
