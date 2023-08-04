@@ -25,17 +25,27 @@ app.use(cors({
   //   res.json('ok')
   // });
   
-  app.post('/register', async (req, res) => {
+app.post('/register', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   const { name, email, password } = req.body;
-  const userDoc = await User.create({
-    name, 
+  const userCreated = await User.create({
+    name,
     email,
     password: bcrypt.hashSync(password, bcryptSalt),
   })
-  res.json(userDoc);
-})
+  res.json(userCreated);
+});
 
+app.post('/login', async (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
+  const { email, password } = req.body;
+  const userFindOne = await User.findOne({ email: email });
+  if (userFindOne) {
+    res.json('Found!');
+  }
+  res.json('not found :(')
+});
+  
 app.listen(4000);
 
 // tOeqFg2W2iR1fkZf
