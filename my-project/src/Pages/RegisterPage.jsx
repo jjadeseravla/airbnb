@@ -8,7 +8,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
 
-  const registerUser = (e) => {
+  const registerUser = async (e) => {
     // so it doesnt reload the page
     e.preventDefault();
     // send req to api
@@ -22,6 +22,18 @@ export default function RegisterPage() {
     } catch (e) {
       alert("registration failed");
     }
+    axios.get('test');
+
+    // const response = await fetch('/register', {
+    //   method: 'POST',
+    //   body: JSON.stringify({ name, password }),
+    //   headers: { 'Content-Type': 'application/json' },
+    // });
+    // if (response.status === 200) {
+    //   alert('registration successful')
+    // } else {
+    //   alert('registration failed');
+    // }
   }
 
   return (
