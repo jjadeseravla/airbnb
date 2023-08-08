@@ -8,6 +8,7 @@ import axios from 'axios';
 
 //front end talks to back end 
 axios.defaults.baseURL = 'http://localhost:4000';
+axios.defaults.withCredentials = true;
 
 function App() {
 

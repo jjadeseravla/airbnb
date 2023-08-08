@@ -1,5 +1,8 @@
 # client:
 ## $ yarn dev
+
+# api:
+## $ node index.js
 ## copy url to browser eg http://127.0.0.1:5173/
 
 ### https://heroicons.com/
