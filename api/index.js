@@ -14,7 +14,7 @@ const jwtSecret = 'abc';
 // use line underneath if get server error 500, could not get 'name' from req.body for register endpoint
 app.use(express.json());
 app.use(cors({
-  //  credentials: true,
+   credentials: true,
   // telling teh backend it must communicate with the url of frontend
    origin: 'http://127.0.0.1:5173',
   // origin: 'http//localhost:5173'
@@ -52,7 +52,7 @@ app.post('/login', async (req, res) => {
       jwt.sign({ email: userFindOne.email, id: userFindOne._id }, jwtSecret, {}, (err, token) => {
         if (err) throw err;
         console.log('-----------4', userFindOne)
-        res.cookie('token', token).json(userFindOne);
+        res.cookie('token', token).json(userInfo); // userInfo cos thats what youve named axios req in login component
       })
     } else {
       console.log('-----------not here')
@@ -62,6 +62,10 @@ app.post('/login', async (req, res) => {
   console.log('-----------not here 2')
   res.json('not found :(')
 });
+
+app.get('/profile', (req, res) => {
+  res.json('user profile');
+})
   
 app.listen(4000);
 
