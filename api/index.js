@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 require('dotenv').config();
 const app = express();
@@ -13,6 +14,7 @@ const jwtSecret = 'abc';
 
 // use line underneath if get server error 500, could not get 'name' from req.body for register endpoint
 app.use(express.json());
+app.use(cookieParser());
 app.use(cors({
    credentials: true,
   // telling teh backend it must communicate with the url of frontend
@@ -49,22 +51,39 @@ app.post('/login', async (req, res) => {
     const passwordOk = bcrypt.compareSync(password, userFindOne.password);
     if (passwordOk) {
       console.log('-----------3')
-      jwt.sign({ email: userFindOne.email, id: userFindOne._id }, jwtSecret, {}, (err, token) => {
+      jwt.sign({
+        email: userFindOne.email,
+        id: userFindOne._id,
+        name: userFindOne.name
+      }, jwtSecret, {}, (err, token) => {
         if (err) throw err;
         console.log('-----------4', userFindOne)
-        res.cookie('token', token).json(userInfo); // userInfo cos thats what youve named axios req in login component
+        res.cookie('token', token).json(userFindOne); // userInfo cos thats what youve named axios req in login component
       })
     } else {
       console.log('-----------not here')
       res.json('password NOT ok')
     }
   }
-  console.log('-----------not here 2')
-  res.json('not found :(')
+  // console.log('-----------not here 2')
+  // res.json('not found :(')
 });
 
 app.get('/profile', (req, res) => {
-  res.json('user profile');
+  console.log('---------------DAVE--------------------', req.cookies)
+  const { token } = req.cookies;
+  if (token) {
+    console.log('---------------DAVE 1--------------------')
+    jwt.verify(token, jwtSecret, {}, (err, user) => {
+      console.log('---------------DAVE 2--------------------')
+      if (err) throw err;
+      res.json(user);
+    })
+  } else {
+    console.log('---------------DAVE 3--------------------')
+
+    res.json(null);
+  }
 })
   
 app.listen(4000);

@@ -14,17 +14,17 @@ export default function LoginPage() {
   const loginUser = async (e) => {
     e.preventDefault();
     try {
-      const {data} = await axios.post('/login', {
+      const { data } = await axios.post('/login', {
         email,
         password,
       },
         // { withCredentials: true }
-     )
-      setUser(data.data);
+      )
+      setUser(data.name);
       setRedirect(true)
     } catch (e) {
-    console.log('error');
-  }
+      console.log('error');
+    }
   }
   
   if (redirect) {

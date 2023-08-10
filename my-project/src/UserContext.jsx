@@ -10,8 +10,12 @@ export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    console.log('-----------p1')
     if (!user) {
-      axios.get('/profile', { withCredentials: true })
+      console.log('-----------p2')
+      axios.get('/profile', { withCredentials: true }).then(({data}) => {
+        setUser(data);
+      });
     }
   }, []);
 
