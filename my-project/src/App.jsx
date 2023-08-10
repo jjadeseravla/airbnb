@@ -5,6 +5,8 @@ import RegisterPage from './Pages/RegisterPage';
 import './Index.css'
 import IndexPage from './Pages/IndexPage';
 import AccountPage from './Pages/AccountPage';
+import ProfilePage from "./Pages/ProfilePage.jsx";
+import PlacesPage from "./Pages/PlacesPage.jsx";
 import axios from 'axios';
 import { UserContextProvider } from './UserContext';
 
@@ -18,12 +20,17 @@ function App() {
     <>
       <UserContextProvider>
         <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<IndexPage />}></Route>
-          <Route path="/Account" element={<AccountPage/>}></Route>
-        </Route>
-          <Route path="/Login" element={<LoginPage />}></Route>
-          <Route path="Register" element={<RegisterPage/>}></Route>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<IndexPage />}></Route>
+            <Route path="/Account/:subpage?" element={<AccountPage />}></Route>
+            <Route path="/account" element={<ProfilePage />} />
+            {/* <Route path="/account/places" element={<PlacesPage />} /> */}
+            <Route path="/account/places/:action" element={<PlacesPage />} />
+            {/* <Route path="/Account/bookings" element={<AccountPage />}></Route>
+            <Route path="/Account/places" element={<AccountPage/>}></Route> */}
+            <Route path="/Login" element={<LoginPage />}></Route>
+            <Route path="Register" element={<RegisterPage/>}></Route>
+          </Route>
         </Routes>
         </UserContextProvider>
     </>
