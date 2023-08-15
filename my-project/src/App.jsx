@@ -7,6 +7,8 @@ import IndexPage from './Pages/IndexPage';
 import AccountPage from './Pages/AccountPage';
 import ProfilePage from "./Pages/ProfilePage.jsx";
 import PlacesPage from "./Pages/PlacesPage.jsx";
+import PlacesFormPage from './Pages/PlacesFormPage';
+import PlacePage from './Pages/PlacePage.jsx';
 import axios from 'axios';
 import { UserContextProvider } from './UserContext';
 
@@ -26,6 +28,9 @@ function App() {
             <Route path="/account" element={<ProfilePage />} />
             {/* <Route path="/account/places" element={<PlacesPage />} /> */}
             <Route path="/account/places/:action" element={<PlacesPage />} />
+            <Route path="/account/places/new" element={<PlacesFormPage />} />
+            <Route path="/account/places/:id" element={<PlacesFormPage />} />
+            <Route path="/place/:id" element={<PlacePage />} />
             {/* <Route path="/Account/bookings" element={<AccountPage />}></Route>
             <Route path="/Account/places" element={<AccountPage/>}></Route> */}
             <Route path="/Login" element={<LoginPage />}></Route>

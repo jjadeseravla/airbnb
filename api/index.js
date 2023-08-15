@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const download = require('image-downloader');
+const multer = require('multer');
+const fs = require('fs');
 
 require('dotenv').config();
 const app = express();
@@ -46,20 +48,16 @@ app.post('/login', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   const { email, password } = req.body;
   const userFindOne = await User.findOne({ email: email });
-  console.log('-----------1')
   if (userFindOne) {
     // see if our log in password is the same as register one
-    console.log('-----------2')
     const passwordOk = bcrypt.compareSync(password, userFindOne.password);
     if (passwordOk) {
-      console.log('-----------3')
       jwt.sign({
         email: userFindOne.email,
         id: userFindOne._id,
         name: userFindOne.name
       }, jwtSecret, {}, (err, token) => {
         if (err) throw err;
-        console.log('-----------4', userFindOne)
         res.cookie('token', token).json(userFindOne); // userInfo cos thats what youve named axios req in login component
       })
     } else {
@@ -72,12 +70,9 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/profile', (req, res) => {
-  console.log('---------------DAVE--------------------', req.cookies)
   const { token } = req.cookies;
   if (token) {
-    console.log('---------------DAVE 1--------------------')
     jwt.verify(token, jwtSecret, {}, (err, user) => {
-      console.log('---------------DAVE 2--------------------')
       if (err) throw err;
       res.json(user);
     })
@@ -96,7 +91,8 @@ app.post('/logout', (req, res) => {
 
 console.log({ __dirname });
 // { __dirname: '/Users/Jade/Documents/airbnb/api' }
-app.post('upload-by-link', async(req, res) => {
+app.post('upload-by-link', async (req, res) => {
+  console.log('-----1')
   const { link } = req.body;
   const newName = Date.now() + '.jpg';
   await download.image({
@@ -104,6 +100,21 @@ app.post('upload-by-link', async(req, res) => {
     dest: __dirname + '/uploads' + newName,
   });
   res.json(__dirname + '/uploads' + newName);
+});
+
+const photosMiddleware = multer({ destination: 'uploads' });
+app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
+  const uploadedFiles = [];
+  console.log('---------', req.files)
+  for (let i = 0; i < req.files.length; i++) {
+    const { path, originalName } = req.files[i];
+    const parts = originalName.split('.')
+    const ext = parts[parts.lenggth - 1];
+    const newPath = path + '.' + ext;
+    fs.renameSync(path, newPath)
+    uploadedFiles.push(newPath.replace('uploads/', ''));
+  }
+  res.json(uploadedFiles);
 })
   
 app.listen(4000);

@@ -59,6 +59,7 @@ export default function PlacesFormPage() {
 
   async function addPhotoByLink(e) {
     e.preventDefault();
+    console.log('in component')
     const { data: filename } = await axios.post('/upload-by-link', { link: photoLink });
     setAddedPhotos(prev => {
       return [...prev, filename]
