@@ -5,6 +5,7 @@ const User = require('./models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const download = require('image-downloader');
 
 require('dotenv').config();
 const app = express();
@@ -15,6 +16,7 @@ const jwtSecret = 'abc';
 // use line underneath if get server error 500, could not get 'name' from req.body for register endpoint
 app.use(express.json());
 app.use(cookieParser());
+app.use('/uploads', express.static(__dirname+ '/uploads'));
 app.use(cors({
    credentials: true,
   // telling teh backend it must communicate with the url of frontend
@@ -90,6 +92,18 @@ app.post('/logout', (req, res) => {
   // reset token
   res.cookie('token', '').json(true);
 
+})
+
+console.log({ __dirname });
+// { __dirname: '/Users/Jade/Documents/airbnb/api' }
+app.post('upload-by-link', async(req, res) => {
+  const { link } = req.body;
+  const newName = Date.now() + '.jpg';
+  await download.image({
+    url: link,
+    dest: __dirname + '/uploads' + newName,
+  });
+  res.json(__dirname + '/uploads' + newName);
 })
   
 app.listen(4000);

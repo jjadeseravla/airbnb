@@ -12,7 +12,7 @@ const AccountPage = () => {
   // let { subpage } = useParams();
   // console.log(subpage); // checks the subpage in url eg /bookings /profile after account
 
-  const { pathname } = useLocation; // remove ()?
+  const { pathname } = useLocation(); // remove ()?
   let subpage = pathname.split('/')?.[2];
   if (subpage === undefined) {
     subpage = 'profile';

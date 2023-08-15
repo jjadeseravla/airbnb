@@ -17,7 +17,9 @@ export default function PlacesFormPage() {
   const [checkOut,setCheckOut] = useState('');
   const [maxGuests,setMaxGuests] = useState(1);
   const [price,setPrice] = useState(100);
-  const [redirect,setRedirect] = useState(false);
+  const [redirect, setRedirect] = useState(false);
+  
+  const [photoLink, setPhotoLink] = useState('');
   useEffect(() => {
     if (!id) {
       return;
@@ -53,6 +55,16 @@ export default function PlacesFormPage() {
         {inputDescription(description)}
       </>
     );
+  }
+
+  async function addPhotoByLink(e) {
+    e.preventDefault();
+    const { data: filename } = await axios.post('/upload-by-link', { link: photoLink });
+    setAddedPhotos(prev => {
+      return [...prev, filename]
+    });
+    //reset state
+    setAddedPhotos('')
   }
 
   async function savePlace(ev) {
@@ -91,6 +103,17 @@ export default function PlacesFormPage() {
         {preInput('Photos','more = better')}
         <PhotosUploader addedPhotos={addedPhotos} onChange={setAddedPhotos} />
         {preInput('Description','description of the place')}
+        <input
+          value={photoLink}
+          onChange={(ev) => setPhotoLink(ev.target.value)}
+          type="text"
+          placeholder="Add using a link...jpg"/>
+        <button onClick={addPhotoByLink} className="bg-gray-200 px-4 rounded-2xl">Add</button>
+        {addedPhotos.length > 0 && addedPhotos.map((link) => {
+          <div>
+            {link}
+          </div>
+        })}
         <textarea value={description} onChange={ev => setDescription(ev.target.value)} />
         {preInput('Perks','select all the perks of your place')}
         <div className="grid mt-2 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">

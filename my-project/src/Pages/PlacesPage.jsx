@@ -5,12 +5,50 @@ import {
 import AccountNav from "../AccountNav";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import PlaceImg from "../PlaceImg";
+import PropTypes from 'prop-types';
+
+// import PlaceImg from "../PlaceImg";
+
+
+Image.propTypes = {
+  src: PropTypes.string.isRequired,
+}
+
+function Image({src,...rest}) {
+  src = src && src.includes('https://')
+    ? src
+    : 'http://localhost:4000/uploads/'+src;
+  return (
+    <img {...rest} src={src} alt={''} />
+  );
+}
+
+
+PlaceImg.propTypes = {
+  place: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+  className: PropTypes.string
+}
+
+function PlaceImg({ place, index = 0, className = null }) {
+  if (!place.photos?.length) {
+    return '';
+  }
+  if (!className) {
+    className = 'object-cover';
+  }
+  return (
+    <Image className={className} src={place.photos[index]} alt=""/>
+  );
+}
+
 export default function PlacesPage() {
   const [places, setPlaces] = useState([]);
   
   //display this action only if link is not new
   // const { action } = useParams();
+
+
 
   useEffect(() => {
     axios.get('/user-places').then(({data}) => {
