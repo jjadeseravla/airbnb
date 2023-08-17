@@ -2,12 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const User = require('./models/User');
+const Place = require('./models/Place');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const download = require('image-downloader');
 const multer = require('multer');
 const fs = require('fs');
+var path = require('path');
+
 
 require('dotenv').config();
 const app = express();
@@ -102,19 +105,113 @@ app.post('upload-by-link', async (req, res) => {
   res.json(__dirname + '/uploads' + newName);
 });
 
-const photosMiddleware = multer({ destination: 'uploads' });
-app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
-  const uploadedFiles = [];
-  console.log('---------', req.files)
+
+var storage = multer.diskStorage({
+  destination: './uploads',
+  filename: function (req, file, cb) {
+      console.log('----------1-------------', file)
+        cb(null, file.originalname);
+    }
+});
+
+const photosMiddleware = multer({
+  storage,
+  // dest: 'uploads'
+});
+
+
+// app.post("/upload_files", upload.array("files"), uploadFiles);
+
+function uploadFiles(req, res) {
+  console.log(req.body);
+  console.log(req.files);
+  
+  // update database
+
+  // redirect somewhere
+  // res.json({ message: "Successfully uploaded files" });
+  let uploadedFiles = [];
   for (let i = 0; i < req.files.length; i++) {
-    const { path, originalName } = req.files[i];
-    const parts = originalName.split('.')
-    const ext = parts[parts.lenggth - 1];
-    const newPath = path + '.' + ext;
-    fs.renameSync(path, newPath)
-    uploadedFiles.push(newPath.replace('uploads/', ''));
+    console.log('---------xxxx', req.files[0])
+    const { path, originalname } = req.files[i];
+    // const parts = originalname.split('.')
+    // const ext = parts[parts.length - 1];
+    // const newPath = path + '.' + ext;
+    // console.log('---------1', req.files[0])
+    // 
+    // fs.renameSync(path, newPath)
+    // const image = fs.readFileSync(path);
+    // console.log('---------2', req.files[0])
+    // Set the appropriate content type for JPEG
+    // res.setHeader('Content-Type', 'image/jpeg');
+    
+    // uploadedFiles.push(newPath.replace('uploads/', ''));
+    uploadedFiles.push(`http://localhost:4000/uploads/${originalname}`);
   }
-  res.json(uploadedFiles);
+  res.send(uploadedFiles);
+}
+
+app.post('/upload', photosMiddleware.array('photos', 100), uploadFiles);
+
+
+
+// app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
+//   const uploadedFiles = [];
+  
+//   for (let i = 0; i < req.files.length; i++) {
+//     console.log('---------xxxx', req.files[0])
+//     const { path, originalname } = req.files[i];
+//     // const parts = originalname.split('.')
+//     // const ext = parts[parts.length - 1];
+//     // const newPath = path + '.' + ext;
+//     // console.log('---------1', req.files[0])
+// // 
+//     // fs.renameSync(path, newPath)
+//     const image = fs.readFileSync(path);
+//     // console.log('---------2', req.files[0])
+//     // Set the appropriate content type for JPEG
+//     res.setHeader('Content-Type', 'image/jpeg');
+
+//     // uploadedFiles.push(newPath.replace('uploads/', ''));
+//     uploadedFiles.push(originalname);
+//   }
+
+
+//   // Send the image in the response
+//   res.send(uploadedFiles);
+//   // res.json(uploadedFiles); // res. send content type image
+// })
+
+app.post('/places', (req, res) => {
+  const token = req.cookies;
+  const {
+    title,
+    address,
+    photos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+  } = req.body;
+  jwt.verify(token, jwtSecret, {}, async(err, userData) => {
+    if (err) throw err;
+    // return our place documentation from DB
+    const placeDoc = await Place.create({
+      owner: userData.id,
+      title,
+      address,
+      photos,
+      description,
+      perks,
+      extraInfo,
+      checkIn,
+      checkOut,
+      maxGuests,
+    });
+    res.json(placeDoc);
+  })
 })
   
 app.listen(4000);
