@@ -55,13 +55,17 @@ app.post('/login', async (req, res) => {
     // see if our log in password is the same as register one
     const passwordOk = bcrypt.compareSync(password, userFindOne.password);
     if (passwordOk) {
-      jwt.sign({
+      jwt.sign(JSON.stringify({ //added this in: JSON.stringify
         email: userFindOne.email,
         id: userFindOne._id,
         name: userFindOne.name
-      }, jwtSecret, {}, (err, token) => {
+      }), jwtSecret, {}, (err, token) => {
         if (err) throw err;
-        res.cookie('token', token).json(userFindOne); // userInfo cos thats what youve named axios req in login component
+        console.log('-------------------- 11')
+        res.cookie('token', token, {
+          sameSite: 'none',
+          secure: true,
+        }).json(userFindOne); // userInfo cos thats what youve named axios req in login component
       })
     } else {
       console.log('-----------not here')
@@ -74,13 +78,15 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
   const { token } = req.cookies;
+  console.log('token', token, req.cookies, 'req.cookies')
   if (token) {
     jwt.verify(token, jwtSecret, {}, (err, user) => {
       if (err) throw err;
+      console.log('------------here-------')
       res.json(user);
     })
   } else {
-    console.log('---------------DAVE 3--------------------')
+    console.log('---------------should not go in here for profile endpoint--------------------')
 
     res.json(null);
   }
@@ -183,7 +189,9 @@ app.post('/upload', photosMiddleware.array('photos', 100), uploadFiles);
 // })
 
 app.post('/places', (req, res) => {
-  const token = req.cookies;
+
+  console.log('-------c1------------------', req.cookies)
+  const token = req.cookies.token;
   const {
     title,
     address,
@@ -195,22 +203,33 @@ app.post('/places', (req, res) => {
     checkOut,
     maxGuests,
   } = req.body;
-  jwt.verify(token, jwtSecret, {}, async(err, userData) => {
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    mongoose.connect(process.env.MONGO_URL);
+
     if (err) throw err;
     // return our place documentation from DB
-    const placeDoc = await Place.create({
-      owner: userData.id,
-      title,
-      address,
-      photos,
-      description,
-      perks,
-      extraInfo,
-      checkIn,
-      checkOut,
-      maxGuests,
-    });
-    res.json(placeDoc);
+
+    console.log('-------------c2', userData.id)
+    console.log('-------------c2', title)
+    try {
+
+      const placeDoc = await Place.create({
+        owner: userData.id,
+        title,
+        address,
+        photos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuests,
+      });
+      console.log('-------------c4')
+      res.json(placeDoc);
+    } catch (err) {
+      console.log(err)
+    }
   })
 })
   

@@ -17,7 +17,7 @@ function Image({src,...rest}) {
 }
 
 PhotosUploader.propTypes = {
-  addedPhotos: PropTypes.string.isRequired,
+  addedPhotos: PropTypes.array.isRequired,
   onChange: PropTypes.func.isRequired,
 }
 

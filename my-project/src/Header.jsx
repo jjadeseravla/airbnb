@@ -46,7 +46,7 @@ const Header = () => {
         </div>
         {!!user && (
           <div>
-            {user}
+            {user.name}
           </div>
         )}
         {/* {user ? <div>{user}</div> : null} */}

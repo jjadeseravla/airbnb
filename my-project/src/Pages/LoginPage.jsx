@@ -14,13 +14,18 @@ export default function LoginPage() {
   const loginUser = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('/login', {
+      const response = await axios.post('/login', {
         email,
         password,
       },
+      // const { data } = await axios.post('/login', {
+      //   email,
+      //   password,
+      // },
         // { withCredentials: true }
       )
-      setUser(data.name);
+      // Cookies.set('access_token', response.headers['x-access-token'])
+      setUser(response.data.name);
       setRedirect(true)
     } catch (e) {
       console.log('error');
