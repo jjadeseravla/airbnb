@@ -236,10 +236,56 @@ app.post('/places', (req, res) => {
 app.get('/places', (req, res) => {
   const { token } = req.cookies;
   jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-    // mongoose.connect(process.env.MONGO_URL);
+    // mongoose.connect(process.env.MONGO_URL); --> why dont i need to connect now? is there a leak?
     // if (err) throw err;
     const { id } = userData;
     res.json(await Place.find({ owner: id }));
+  })
+});
+
+app.get('places/:id', async (req, res) => {
+  // res.json(req.params)
+  // console.log(req.params, 'req.params')
+  // mongoose.connect(process.env.MONGO_URL);
+  // console.log(req.params.id, 'id')
+  const { id } = req.params;
+  res.json(await Place.findById(id));
+});
+
+app.put('places/:id', async (req, res) => {
+  const token = req.cookies.token;
+  const {
+    id,
+    title,
+    address,
+    photos,
+    description,
+    perks,
+    extraInfo,
+    checkIn,
+    checkOut,
+    maxGuests,
+  } = req.body;
+  //when we have it, we want to check owner (userId), is the same guy with the user token (above)
+  // so to grab user token you need the line below
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    if (err) throw err;
+    const placeDoc = await Place.findById(id);
+    if (userData.id === placeDoc.owner.toString()) {
+      placeDoc.set({
+        title,
+        address,
+        photos: addedPhotos,
+        description,
+        perks,
+        extraInfo,
+        checkIn,
+        checkOut,
+        maxGuests,
+      })
+      await placeDoc.save();
+      res.json('ok');
+    }
   })
 })
   
