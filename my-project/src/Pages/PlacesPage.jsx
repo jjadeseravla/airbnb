@@ -51,7 +51,7 @@ export default function PlacesPage() {
 
 
   useEffect(() => {
-    axios.get('/user-places').then(({data}) => {
+    axios.get('places').then(({data}) => {
       setPlaces(data);
     });
   }, []);
@@ -78,6 +78,18 @@ export default function PlacesPage() {
               </div>
             </Link>
           ))}
+        <div className="mt-4">
+          {places.length > 0 && places.map((place) => {
+            <div className="flex gap-4 bg-gray-100 p-4 rounded-2xl">
+              <div className="w-32 h-32 bg-gray-300">
+                {place.photos.length > 0 && (
+                  <img src={place.photos[0]} alt=""/>
+                )}
+              </div>
+              <h2 className="text-xl">{place.title}</h2>
+            </div>
+          })}
+        </div>
         </div>
     </div>
   );

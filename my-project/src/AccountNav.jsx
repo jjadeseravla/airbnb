@@ -2,7 +2,7 @@ import {Link, useLocation} from "react-router-dom";
 
 export default function AccountNav() {
   const {pathname} = useLocation();
-  let subpage = pathname.split('/')?.[2];
+  let subpage = pathname.split('/')?.[2]; // grab the 2nd part of url eg account/places, and if places render x on page
   if (subpage === undefined) {
     subpage = 'profile';
   }

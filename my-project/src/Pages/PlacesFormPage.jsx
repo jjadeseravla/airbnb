@@ -71,7 +71,7 @@ export default function PlacesFormPage() {
   async function savePlace(ev) {
     ev.preventDefault();
     const placeData = {
-      title, address, addedPhotos,
+      title, address, photos:addedPhotos,
       description, perks, extraInfo,
       checkIn, checkOut, maxGuests, price,
     };
