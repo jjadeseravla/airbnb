@@ -160,36 +160,7 @@ function uploadFiles(req, res) {
 app.post('/upload', photosMiddleware.array('photos', 100), uploadFiles);
 
 
-
-// app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
-//   const uploadedFiles = [];
-  
-//   for (let i = 0; i < req.files.length; i++) {
-//     console.log('---------xxxx', req.files[0])
-//     const { path, originalname } = req.files[i];
-//     // const parts = originalname.split('.')
-//     // const ext = parts[parts.length - 1];
-//     // const newPath = path + '.' + ext;
-//     // console.log('---------1', req.files[0])
-// // 
-//     // fs.renameSync(path, newPath)
-//     const image = fs.readFileSync(path);
-//     // console.log('---------2', req.files[0])
-//     // Set the appropriate content type for JPEG
-//     res.setHeader('Content-Type', 'image/jpeg');
-
-//     // uploadedFiles.push(newPath.replace('uploads/', ''));
-//     uploadedFiles.push(originalname);
-//   }
-
-
-//   // Send the image in the response
-//   res.send(uploadedFiles);
-//   // res.json(uploadedFiles); // res. send content type image
-// })
-
 app.post('/places', (req, res) => {
-
   console.log('-------c1------------------', req.cookies)
   const token = req.cookies.token;
   const {
@@ -233,7 +204,7 @@ app.post('/places', (req, res) => {
   })
 })
 
-app.get('/places', (req, res) => {
+app.get('/user-places', (req, res) => {
   const { token } = req.cookies;
   jwt.verify(token, jwtSecret, {}, async (err, userData) => {
     // mongoose.connect(process.env.MONGO_URL); --> why dont i need to connect now? is there a leak?
@@ -287,6 +258,10 @@ app.put('places/:id', async (req, res) => {
       res.json('ok');
     }
   })
+});
+
+app.get('/places', async(req, res) => {
+  res.json(await Place.find())
 })
   
 app.listen(4000);
